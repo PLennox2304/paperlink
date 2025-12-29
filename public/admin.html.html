@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+</head>
+<body>
+  <h1>Admin Login</h1>
+
+  <input id="adminCode" placeholder="Admin-Code">
+  <button onclick="login()">Login</button>
+
+  <div id="panel" style="display:none;">
+    <h2>Codes</h2>
+    <ul id="list"></ul>
+  </div>
+
+<script>
+async function login() {
+  const res = await fetch("/api/admin/login", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({code: adminCode.value})
+  });
+  const data = await res.json();
+  if (data.success) {
+    panel.style.display = "block";
+    load();
+  } else alert("Falscher Code");
+}
+
+async function load() {
+  const res = await fetch("/api/admin/codes");
+  const codes = await res.json();
+  list.innerHTML = "";
+  for (let c in codes) {
+    const li = document.createElement("li");
+    li.innerHTML = `${c} → ${codes[c].url}
+      <button onclick="del('${c}')">❌</button>`;
+    list.appendChild(li);
+  }
+}
+
+async function del(code) {
+  await fetch("/api/admin/code/" + code, {method:"DELETE"});
+  load();
+}
+</script>
+</body>
+</html>

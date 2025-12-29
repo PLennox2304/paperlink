@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Code erstellen</title>
+<style>
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.card {
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+}
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+button {
+  background: #00ff99;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Neuen Code erstellen</h2>
+
+  <input id="code" placeholder="Code (z.B. X77)">
+  <input id="link" placeholder="https://...">
+
+  <button onclick="save()">Speichern</button>
+  <p id="msg"></p>
+
+  <button onclick="location.href='index.html'">
+    ⬅ Zurück
+  </button>
+</div>
+
+<script>
+function save() {
+  const code = document.getElementById("code").value.trim();
+  const link = document.getElementById("link").value.trim();
+
+  if (!/^[a-zA-Z0-9]+$/.test(code)) {
+    return alert("Code nur Buchstaben & Zahlen");
+  }
+
+  fetch("/save", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ code, link })
+  })
+  .then(r => r.text())
+  .then(t => {
+    document.getElementById("msg").innerText =
+      t === "OK" ? "Gespeichert!" : t;
+  });
+}
+</script>
+
+</body>
+</html>
